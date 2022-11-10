@@ -4,6 +4,19 @@
  */
 package mx.itson.catrina.ui;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
+import mx.itson.catrina.entidades.Estado;
+import mx.itson.catrina.entidades.Movimiento;
+import mx.itson.catrina.enumeradores.Tipo;
+
 /**
  *
  * @author 52622
@@ -27,55 +40,46 @@ public class UI extends javax.swing.JFrame {
     private void initComponents() {
 
         lblEstadoCuenta = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        jcbMeses = new javax.swing.JComboBox<>();
         btnBuscar = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblInformacion = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblMovimientos = new javax.swing.JTable();
+        lblError = new javax.swing.JLabel();
+        lblNombre = new javax.swing.JLabel();
+        lblRfc = new javax.swing.JLabel();
+        lblDomicilio = new javax.swing.JLabel();
+        lblCp = new javax.swing.JLabel();
+        lblCuenta = new javax.swing.JLabel();
+        lblClabe = new javax.swing.JLabel();
+        lblMoneda = new javax.swing.JLabel();
+        lblSubtotal = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         lblEstadoCuenta.setFont(new java.awt.Font("Segoe UI Black", 0, 24)); // NOI18N
         lblEstadoCuenta.setText("Estados de Cuenta");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        jcbMeses.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" }));
+        jcbMeses.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                jcbMesesActionPerformed(evt);
             }
         });
 
         btnBuscar.setText("Buscar...");
-
-        tblInformacion.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Información", "Diferencia Mensual", "Detalles del Movimiento"
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
             }
-        ));
-        jScrollPane1.setViewportView(tblInformacion);
-        if (tblInformacion.getColumnModel().getColumnCount() > 0) {
-            tblInformacion.getColumnModel().getColumn(0).setHeaderValue("Información");
-            tblInformacion.getColumnModel().getColumn(1).setHeaderValue("Diferencia Mensual");
-            tblInformacion.getColumnModel().getColumn(2).setHeaderValue("Detalles del Movimiento");
-        }
+        });
 
         tblMovimientos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Fecha del Movimiento", "Detalles", "Depósito", "Retiro"
+                "Fecha del Movimiento", "Detalles", "Depósito", "Retiro", "Subtotal"
             }
         ));
         jScrollPane2.setViewportView(tblMovimientos);
@@ -84,21 +88,42 @@ public class UI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(jScrollPane2)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(186, 186, 186)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jcbMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(162, 162, 162)
                         .addComponent(btnBuscar))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(239, 239, 239)
-                        .addComponent(lblEstadoCuenta)))
-                .addContainerGap(214, Short.MAX_VALUE))
+                        .addComponent(lblEstadoCuenta))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblNombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblRfc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(lblCp, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                    .addComponent(lblDomicilio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(195, 195, 195)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblCuenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblClabe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblMoneda, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblError, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(lblSubtotal, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -107,11 +132,35 @@ public class UI extends javax.swing.JFrame {
                 .addComponent(lblEstadoCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jcbMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBuscar))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblError, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblRfc, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblCp, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lblCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblClabe, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)))
+                .addGap(12, 12, 12)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblSubtotal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -119,9 +168,69 @@ public class UI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    DateFormat formatoFecha = new SimpleDateFormat("d 'de' MMMM 'de' yyyy");
+    Locale local = new Locale("es", "MX");
+    NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(local);
+    private void jcbMesesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbMesesActionPerformed
+        
+    }//GEN-LAST:event_jcbMesesActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        try {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+
+            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                File archivo = fileChooser.getSelectedFile();
+                byte[] archivoByte = Files.readAllBytes(archivo.toPath());
+                String contenido = new String(archivoByte, StandardCharsets.UTF_8);
+                
+                int contador = jcbMeses.getSelectedIndex();
+
+                Estado estado = new Estado().deserializar(contenido);
+                lblNombre.setText(estado.getCliente().getNombre());
+                lblRfc.setText(estado.getCliente().getRfc());
+                lblDomicilio.setText(estado.getCliente().getDomicilio());
+                lblCp.setText(estado.getCliente().getCp());
+                lblCuenta.setText(estado.getCuenta());
+                lblClabe.setText(estado.getClabe());
+                lblMoneda.setText(estado.getMoneda());
+
+                double subtotal = 0;
+                DefaultTableModel modelMovimientos = (DefaultTableModel) tblMovimientos.getModel();
+
+               
+
+                    for (Movimiento movimiento : estado.getMovimientos()) {
+                        if (movimiento.getTipo() == Tipo.DEPOSITO) {
+                            subtotal+=movimiento.getCantidad();
+                            
+                            modelMovimientos.addRow(new Object[]{
+                                formatoFecha.format(movimiento.getFecha()),
+                                movimiento.getDescripcion(),
+                                formatoMoneda.format(movimiento.getCantidad()),
+                                " ",
+                                subtotal
+                            });
+                        } else if (movimiento.getTipo() == Tipo.RETIRO) {
+                            subtotal-=movimiento.getCantidad();
+                            modelMovimientos.addRow(new Object[]{
+                                formatoFecha.format(movimiento.getFecha()),
+                                movimiento.getDescripcion(),
+                                " ",
+                                formatoMoneda.format(movimiento.getCantidad()),
+                                subtotal
+                            });
+                        }
+
+                    }
+                
+            }
+        } catch (Exception e) {
+            lblError.setText("No se ha seleccionado un archivo Json correctamente, inténtelo de nuevo.");
+        }
+
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -137,16 +246,24 @@ public class UI extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -160,11 +277,20 @@ public class UI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JComboBox<String> jcbMeses;
+    private javax.swing.JLabel lblClabe;
+    private javax.swing.JLabel lblCp;
+    private javax.swing.JLabel lblCuenta;
+    private javax.swing.JLabel lblDomicilio;
+    private javax.swing.JLabel lblError;
     private javax.swing.JLabel lblEstadoCuenta;
-    private javax.swing.JTable tblInformacion;
+    private javax.swing.JLabel lblMoneda;
+    private javax.swing.JLabel lblNombre;
+    private javax.swing.JLabel lblRfc;
+    private javax.swing.JLabel lblSubtotal;
     private javax.swing.JTable tblMovimientos;
     // End of variables declaration//GEN-END:variables
+
 }
